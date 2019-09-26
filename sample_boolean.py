@@ -58,22 +58,22 @@ class Erf(nn.Module):
     def forward(self, x):
         return x.erf()
     
-def f2str(f, inputd=None):
+def f2str(f, inputd=None, bit=BIT):
     '''
     Given a scalar function on the boolean cube, threshold it to
     a boolean function, and then converting that to a binary string.
     '''
     if inputd is None:
         inputd = f.inputdim
-    inputbatch = Variable(torch.Tensor(list(product(BIT, repeat=inputd))))
+    inputbatch = Variable(torch.Tensor(list(product(bit, repeat=inputd))))
     outputs = f(inputbatch) > 0
     return ''.join(map(lambda x: str(x), outputs.data.numpy().reshape(-1)))
 
-def sample_boolean_fun(f, vw, vb, n, outformat='list'):
+def sample_boolean_fun(f, vw, vb, n, outformat='list', bit=BIT):
     Cs = Counter()
     for _ in range(n):
         f.randomize(np.sqrt(vb), np.sqrt(vw))
-        Cs[f2str(f)] += 1
+        Cs[f2str(f, bit=BIT)] += 1
     if outformat == 'counter':
         return Cs
     elif outformat == 'list':
